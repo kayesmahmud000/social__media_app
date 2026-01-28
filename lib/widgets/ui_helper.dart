@@ -21,11 +21,18 @@ class UiHelper {
     return Image.asset('assets/images/$imageUrl');
   }
 
-static Widget customTextBtn({required VoidCallback callback, required String text}){
-  return SizedBox(
-child: TextButton(onPressed: (){}, child: Text(text, style: TextStyle(),)),
-  );
-}
+  static Widget customTextBtn({
+    required VoidCallback callback,
+    required String text,
+  }) {
+    return SizedBox(
+      child: TextButton(
+        onPressed: () => {callback()},
+        child: Text(text, style: TextStyle(color: Colors.blue, fontSize: 15)),
+      ),
+    );
+  }
+
   static Widget customBtn({
     required VoidCallback callback,
     required String text,
@@ -37,7 +44,7 @@ child: TextButton(onPressed: (){}, child: Text(text, style: TextStyle(),)),
           backgroundColor: Colors.blue,
           shape: RoundedRectangleBorder(borderRadius: .circular(3)),
         ),
-        onPressed: () => {},
+        onPressed: () => {callback()},
         child: Text(text, style: TextStyle(color: Colors.white)),
       ),
     );

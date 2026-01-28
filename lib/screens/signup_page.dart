@@ -2,35 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
 import 'package:social_media_app/screens/home_page.dart';
-import 'package:social_media_app/screens/signup_page.dart';
+import 'package:social_media_app/screens/login_page.dart';
 import 'package:social_media_app/widgets/logo.dart';
 import 'package:social_media_app/widgets/ui_helper.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
 
-  void handleLogin() async {
+  void handleSignup() async {
     final email = emailController.text;
     final pass = passController.text;
+    final userName = nameController.text;
 
-    print('$email, $pass');
-
-    if (email.isEmpty || pass.isEmpty) {
+    if (email.isEmpty || pass.isEmpty || userName.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Fill the All Input")));
       return;
     }
 
-    bool isSuccess = await context.read<AuthProvider>().login(email, pass);
+    bool isSuccess = await context.read<AuthProvider>().signUp(
+      userName,
+      email,
+      pass,
+    );
 
     if (isSuccess) {
       if (mounted) {
@@ -47,6 +51,10 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
   }
+
+  // TODO: Copywith constractor
+  // TODO: error handling
+  // TODO: from validation
 
   @override
   Widget build(BuildContext context) {
@@ -73,12 +81,20 @@ class _LoginPageState extends State<LoginPage> {
                 textInputType: TextInputType.visiblePassword,
               ),
               const SizedBox(height: 10),
+              const SizedBox(height: 10),
+
+              UiHelper.customTextField(
+                controller: nameController,
+                text: "Username",
+                textInputType: TextInputType.text,
+              ),
+              const SizedBox(height: 10),
 
               UiHelper.customBtn(
                 callback: () {
-                  handleLogin();
+                  handleSignup();
                 },
-                text: "Login",
+                text: "Sign Up",
               ),
 
               const SizedBox(height: 15),
@@ -88,17 +104,17 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: .min,
                 children: [
                   Text(
-                    "Don't Have an Account ? ",
+                    "Already Have an Account ? ",
                     style: TextStyle(fontSize: 15, fontWeight: .w500),
                   ),
                   UiHelper.customTextBtn(
                     callback: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => SignupPage()),
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
-                    text: "Create Account",
+                    text: "Log In ",
                   ),
                 ],
               ),
