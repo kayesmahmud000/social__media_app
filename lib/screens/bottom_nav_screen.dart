@@ -43,8 +43,8 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
             label: 'Post',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(CupertinoIcons.heart),
-            activeIcon: const Icon(CupertinoIcons.heart_fill),
+            icon: const Icon(Icons.favorite_border),
+            activeIcon: const Icon(Icons.favorite),
             label: 'Favorite',
           ),
           const BottomNavigationBarItem(
