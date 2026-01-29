@@ -5,11 +5,14 @@ class UiHelper {
     required TextEditingController controller,
     required String text,
     required TextInputType textInputType,
+    required String? Function(String?)? validator,
+    bool isPassword = false,
   }) {
-    return TextField(
+    return TextFormField(
       keyboardType: textInputType,
       controller: controller,
-
+      obscureText: isPassword,
+      validator: validator,
       decoration: InputDecoration(
         hint: Text(text),
         border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),

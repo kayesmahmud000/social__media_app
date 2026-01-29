@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:social_media_app/widgets/ui_helper.dart';
 
 class Logo {
-  static Widget logo() {
+  static Widget logo({
+    double top = 0,
+    double bottom = -45,
+    double width = 130,
+    double w = 150,
+  }) {
     return Stack(
       alignment: Alignment.center,
       children: [
-        SizedBox(width: 150, child: UiHelper.customImage(imageUrl: 'wave.png')),
+        SizedBox(
+          width: w,
+          child: UiHelper.customImage(imageUrl: 'wave.png'),
+        ),
         Positioned(
-          bottom: -45,
+          bottom: bottom,
           child: SizedBox(
-            width: 130,
+            width: width,
             child: UiHelper.customImage(imageUrl: 'logo2.png'),
           ),
         ),

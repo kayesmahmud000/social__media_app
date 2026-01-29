@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_media_app/helper/security_helper.dart';
 import 'package:social_media_app/models/user_model.dart';
 import 'package:social_media_app/repositories/user_repository.dart';
+import 'package:social_media_app/usecases/user_login_use_case.dart';
+import 'package:social_media_app/usecases/user_sign_up_usecase.dart';
 
 class AuthProvider extends ChangeNotifier {
   final UserRepository _userRepository = UserRepository();
@@ -10,39 +12,47 @@ class AuthProvider extends ChangeNotifier {
   User? _currentUser;
 
   bool _isLoggedIn = false;
+  bool _isLoading =false;
+
+  bool get isLoading => _isLoading;
 
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _isLoggedIn;
 
-  Future<bool> signUp(String userName, String email, String pass) async {
-    String hashedPass = SecurityHelper.hashedPassword(pass);
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
 
-    User newUser = User(userName: userName, email: email, pass: hashedPass);
+  Future<bool> signUp(UserSignUpDTO userDTO) async {
+    _setLoading(true);
 
-    int userId = await _userRepository.signUp(newUser);
+    try {
+      User? user = await _userRepository.signUp(userDTO);
 
-    if (userId > 0) {
-      _currentUser = User(
-        id: userId,
-        userName: userName,
-        email: email,
-        pass: hashedPass,
-      );
+    if (user !=null) {
+      _currentUser = user;
       _isLoggedIn = true;
 
       final sharedPreferences = await SharedPreferences.getInstance();
-      await sharedPreferences.setInt('userId', userId);
+      await sharedPreferences.setInt('userId', user.id!);
 
       notifyListeners();
       return true;
     }
     return false;
+    } catch (e) {
+      debugPrint(e.toString());
+     rethrow;
+    }finally {
+      _setLoading(false); 
+    }
   }
 
-  Future<bool> login(String email, String pass) async {
-    String hashedPass = SecurityHelper.hashedPassword(pass);
+  Future<bool> login(UserLoginDTO userDTO) async {
+    
 
-    User? user = await _userRepository.login(email, hashedPass);
+    User? user = await _userRepository.login(userDTO);
 
     if (user != null) {
       _currentUser = user;

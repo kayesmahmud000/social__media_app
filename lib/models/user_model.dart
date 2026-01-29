@@ -13,6 +13,22 @@ class User {
     this.profileUrl,
   });
 
+  User copyWith({
+    int? id,
+    String? email,
+    String? userName,
+    String? pass,
+    String? profileUrl,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      pass: pass ?? this.pass,
+      userName: userName ?? this.userName,
+      profileUrl: profileUrl ?? this.profileUrl,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'username': userName,
@@ -22,13 +38,13 @@ class User {
     };
   }
 
- factory User.fromMap(Map<String, dynamic> data) {
+  factory User.fromMap(Map<String, dynamic> data) {
     return User(
       id: data['id'],
       email: data['email'],
       pass: data['password'],
       userName: data['username'],
-      profileUrl: data['profile_url']
+      profileUrl: data['profile_url'],
     );
   }
 }

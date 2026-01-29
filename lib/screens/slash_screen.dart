@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
-import 'package:social_media_app/screens/home_page.dart';
+import 'package:social_media_app/screens/bottom_nav_screen.dart';
 import 'package:social_media_app/screens/login_page.dart';
 import 'package:social_media_app/widgets/logo.dart';
 
@@ -32,7 +32,7 @@ class _SlashScreenState extends State<SlashScreen> {
     if (authProvider.isLoggedIn) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const BottomNavScreen()),
       );
     } else {
       Navigator.pushReplacement(

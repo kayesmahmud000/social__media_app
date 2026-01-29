@@ -1,37 +1,56 @@
+import 'package:social_media_app/exception/database_custom_exception.dart';
+import 'package:social_media_app/helper/security_helper.dart';
 import 'package:social_media_app/models/user_model.dart';
 import 'package:social_media_app/repositories/main_repository.dart';
 import 'package:social_media_app/services/db_service.dart';
+import 'package:social_media_app/usecases/user_login_use_case.dart';
+import 'package:social_media_app/usecases/user_sign_up_usecase.dart';
 
 class UserRepository extends MainRepository<User> {
   @override
-  // TODO: implement tableName
   String get tableName => DbService.TABLE_USER;
 
-  Future<int> signUp(User user) async {
+  Future<User?> signUp(UserSignUpDTO userDTO) async {
+    String hashedPass = SecurityHelper.hashedPassword(userDTO.password);
+
+    var user = User(
+      email: userDTO.email,
+      pass: hashedPass,
+      userName: userDTO.username,
+    );
+
     var userId = await insert(user.toMap());
 
-    return userId;
+    var newUser = user.copyWith(id: userId);
+
+    return newUser;
   }
 
   Future<User?> getUserById(int id) async {
-    final map = await getById(id); 
+    final map = await getById(id);
     if (map != null) {
       return User.fromMap(map);
     }
     return null;
   }
 
- 
-  Future<User?> login(String email, String pass) async {
-    final database = await db;
-    final List<Map<String, dynamic>> maps = await database.query(
-      tableName,
-      where: "${DbService.COL_USER_EMAIL} = ? AND ${DbService.COL_USER_PASS} = ?",
-      whereArgs: [email, pass],
-    );
-    if (maps.isNotEmpty) return User.fromMap(maps.first);
-    return null;
+  Future<User?> login(UserLoginDTO userDTO) async {
+    try {
+      String hashedPass = SecurityHelper.hashedPassword(userDTO.password);
+      final database = await db;
+      final List<Map<String, dynamic>> maps = await database.query(
+        tableName,
+        where:
+            "${DbService.COL_USER_EMAIL} = ? AND ${DbService.COL_USER_PASS} = ?",
+        whereArgs: [userDTO.email, hashedPass],
+      );
+      if (maps.isNotEmpty) {
+        return User.fromMap(maps.first);
+      } else {
+        throw DatabaseCustomException('Invalid email or password');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
-
-
 }
