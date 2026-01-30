@@ -14,12 +14,7 @@ class BottomNavScreen extends StatefulWidget {
 
 class _BottomNavScreenState extends State<BottomNavScreen> {
   int currentIdx = 0;
-  List<Widget> navItems = [
-    HomePage(),
-    PostPage(),
-    FavoritePage(),
-    ProfilePage(),
-  ];
+  List<Widget> navItems = [HomePage(), FavoritePage(), ProfilePage()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,13 +49,25 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
           ),
         ],
         onTap: (index) {
-          setState(() {
-            currentIdx = index;
-          });
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PostPage()),
+            );
+          } else {
+            setState(() {
+              currentIdx = index;
+            });
+          }
         },
       ),
 
-      body: IndexedStack(index: currentIdx, children: navItems),
+      body: IndexedStack(
+        index: currentIdx == 1
+            ? 0
+            : (currentIdx > 1 ? currentIdx - 1 : currentIdx),
+        children: navItems,
+      ),
     );
   }
 }
