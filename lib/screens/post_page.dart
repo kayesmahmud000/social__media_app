@@ -2,7 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/helper/image_pick_helper.dart';
+import 'package:social_media_app/models/user_model.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
+import 'package:social_media_app/providers/post_provider.dart';
+import 'package:social_media_app/usecases/post_use_case.dart';
 
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
@@ -13,7 +16,7 @@ class PostPage extends StatefulWidget {
 
 class _PostPageState extends State<PostPage> {
   final TextEditingController _contentController = TextEditingController();
-  final ImagePickHegiylper _imageHelper = ImagePickHelper();
+  final ImagePickHelper _imageHelper = ImagePickHelper();
   String? _selectedImagePath;
 
   void _handleImagePick() async {
@@ -23,12 +26,38 @@ class _PostPageState extends State<PostPage> {
     }
   }
 
+  void handlePost() async {
+    final content = _contentController.text;
+    final User? currentUser = context.read<AuthProvider>().currentUser;
 
-  void handlePost(){
+    if (content.isEmpty && _selectedImagePath == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please write something!!')));
+      return;
+    }
 
+    final PostDTO post = PostDTO(
+      userId: currentUser!.id!,
+      content: content,
+      imagePath: _selectedImagePath,
+      timeStamp: DateTime.now().toIso8601String(),
+    );
+
+    final success = await context.read<PostProvider>().createPost(post);
+
+    if (success && mounted) {
+      Navigator.pop(context);
+    }
   }
 
-  
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _contentController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthProvider>().currentUser;
@@ -51,7 +80,7 @@ class _PostPageState extends State<PostPage> {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                handlePost();
               },
               child: const Text(
                 "Share",

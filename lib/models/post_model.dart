@@ -39,7 +39,7 @@ class PostModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
+      'user_id': userId,
       'content': content,
       'image_path': imagePath,
       'time_stamp': timeStamp,
@@ -49,11 +49,11 @@ class PostModel {
   factory PostModel.fromMap(Map<String, dynamic> data) {
     return PostModel(
       id: data['id'],
-      userId: data['userId'],
+      userId: data['user_id'],
       content: data['content'],
+      userName: data['username'],
       imagePath: data['image_path'],
       timeStamp: data['time_stamp'],
-      userName: data['username'],
       userAvatar: data['profile_url'],
     );
   }

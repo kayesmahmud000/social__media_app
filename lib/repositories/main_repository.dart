@@ -36,7 +36,7 @@ abstract class MainRepository<T> {
   Future<int> delete(int id) async {
     try {
       final database = await db;
-      return await database.delete(tableName, where:'id =?', whereArgs: [id]);
+      return await database.delete(tableName, where: 'id =?', whereArgs: [id]);
     } catch (e) {
       rethrow;
     }
@@ -53,22 +53,21 @@ abstract class MainRepository<T> {
   }
 
   Future<Map<String, dynamic>?> getById(int id) async {
-   try{
- final database = await db;
+    try {
+      final database = await db;
 
-    final List<Map<String, dynamic>> map = await database.query(
-      tableName,
-      where:'id=?',
-      whereArgs: [id],
-    );
+      final List<Map<String, dynamic>> map = await database.query(
+        tableName,
+        where: 'id=?',
+        whereArgs: [id],
+      );
 
-    if (map.isNotEmpty) {
-      return map.first;
+      if (map.isNotEmpty) {
+        return map.first;
+      }
+      return null;
+    } catch (e) {
+      rethrow;
     }
-    return null;
-  
-   }catch (e){
-    rethrow;
-   }
-   }
+  }
 }

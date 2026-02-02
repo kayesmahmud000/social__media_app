@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
+import 'package:social_media_app/providers/post_provider.dart';
 import 'package:social_media_app/widgets/logo.dart';
 import 'package:social_media_app/widgets/post_card.dart';
 import 'package:social_media_app/widgets/story_section.dart';
@@ -12,41 +13,55 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Map<String, String?>> dummyPosts = [
-    {
-      "userName": "sakib_99",
-      "title": "The Sky Is Beautiful!  #nature #sky",
-      "avatar": "https://randomuser.me/api/portraits/men/1.jpg",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800",
-    },
-    {
-      "userName": "anika_travels",
-      "title": "Missing the mountain vibes. ",
-      "avatar": "https://randomuser.me/api/portraits/women/2.jpg",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
-    },
-    {
-      "userName": "foodie_bhai",
-      "title": "Best Burger in town! ",
-      "avatar": "https://randomuser.me/api/portraits/men/3.jpg",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800",
-    },
-    {
-      "userName": "tech_geek",
-      "title": "My new setup is finally ready. ",
-      "avatar": "https://randomuser.me/api/portraits/men/4.jpg",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800",
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      if (mounted) {
+        Provider.of<PostProvider>(context, listen: false).getPosts();
+      }
+    });
+  }
+
+  void handleDelete(int id) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Post"),
+        content: const Text("Are you sure you want to delete this post?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<PostProvider>().deletePost(id);
+              Navigator.pop(context);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Deleting post..."),
+                  duration: Duration(seconds: 1),
+                ),
+              );
+            },
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    AuthProvider provider = context.watch<AuthProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    final postProvider = context.watch<PostProvider>();
 
-    if (provider.currentUser == null) {
+    final allPosts = postProvider.posts;
+
+    if (authProvider.currentUser == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -72,23 +87,32 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-
           const SliverToBoxAdapter(child: StorySection()),
 
-          // const SliverToBoxAdapter(
-          //   child: Divider(thickness: 0.5, color: Colors.grey),
-          // ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final post = dummyPosts[index];
-              return PostCard(
-                userName: post['userName']!,
-                title: post['title']!,
-                avatar: post['avatar'],
-                imageUrl: post['imageUrl'],
-              );
-            }, childCount: dummyPosts.length),
-          ),
+          if (postProvider.isLoading)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            )
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final post = allPosts[index];
+                return PostCard(
+                  userName: post.userName ?? "User",
+                  title: post.content ?? "",
+                  avatar: post.userAvatar,
+                  imageUrl: post.imagePath,
+                  onDelete: () {
+                    if (post.id != null) {
+                      handleDelete(post.id!);
+                    }
+                  },
+                );
+              }, childCount: allPosts.length),
+            ),
         ],
       ),
     );
