@@ -5,20 +5,18 @@ import 'package:social_media_app/usecases/post_use_case.dart';
 
 class PostProvider extends ChangeNotifier {
   final PostRepository _postRepository = PostRepository();
-
   List<PostModel> _posts = [];
   bool _isLoading = false;
 
   List<PostModel> get posts => _posts;
   bool get isLoading => _isLoading;
 
-// get post
-  Future<void> getPosts() async {
+  
+  Future<void> getPosts(int userId) async {
     _isLoading = true;
     notifyListeners();
-
     try {
-      _posts = await _postRepository.getAllPost();
+      _posts = await _postRepository.getAllPost(userId);
     } catch (e) {
       debugPrint("Error loading posts: $e");
     } finally {
@@ -26,37 +24,40 @@ class PostProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
- 
 
-//upload post
-Future<bool> createPost (PostDTO postDTO) async{
-  try{
-      PostModel? newPost =await _postRepository.createPost(postDTO); 
-    
-    if(newPost !=null){
-      await getPosts();
-      return true;
+  // upload post
+  Future<bool> createPost(PostDTO postDTO) async {
+    try {
+      PostModel? newPost = await _postRepository.createPost(postDTO);
+      if (newPost != null) {
+        await getPosts(postDTO.userId);
+        return true;
+      }
+    } catch (e) {
+      debugPrint("Error sharing post: $e");
     }
-  }catch (e){
-  debugPrint("Error sharing post: $e");
-     }
-
-     return false;
-}
-
-
-// Delete post 
-Future<void> deletePost (int id )async{
-  try{
-  bool check = await _postRepository.deletePost(id);
-   
-   if(check){
-    await getPosts();
-    notifyListeners();
-   }
-  }catch (e){
-     debugPrint("Error Delete post: $e");
+    return false;
   }
+
+  
+  Future<void> deletePost(int id, int userId) async {
+    try {
+      bool check = await _postRepository.deletePost(id);
+      if (check) {
+        await getPosts(userId);
+      }
+    } catch (e) {
+      debugPrint("Error Delete post: $e");
+    }
+  }
+
  
-}
+  Future<void> handleLike(int postId, int userId) async {
+    try {
+      await _postRepository.toggleLike(postId, userId);
+      await getPosts(userId); 
+    } catch (e) {
+      debugPrint("Error Liking post: $e");
+    }
+  }
 }

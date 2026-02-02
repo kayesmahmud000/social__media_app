@@ -16,20 +16,22 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
     Future.microtask(() {
       if (mounted) {
-        Provider.of<PostProvider>(context, listen: false).getPosts();
+        final userId = context.read<AuthProvider>().currentUser?.id;
+        if (userId != null) {
+          context.read<PostProvider>().getPosts(userId);
+        }
       }
     });
   }
 
-  void handleDelete(int id) {
+  void handleDelete(int postId, int userId) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Delete Post"),
-        content: const Text("Are you sure you want to delete this post?"),
+        content: const Text("Are you sure?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -37,15 +39,8 @@ class _HomePageState extends State<HomePage> {
           ),
           TextButton(
             onPressed: () {
-              context.read<PostProvider>().deletePost(id);
+              context.read<PostProvider>().deletePost(postId, userId);
               Navigator.pop(context);
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Deleting post..."),
-                  duration: Duration(seconds: 1),
-                ),
-              );
             },
             child: const Text("Delete", style: TextStyle(color: Colors.red)),
           ),
@@ -58,10 +53,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final postProvider = context.watch<PostProvider>();
+    final currentUser = authProvider.currentUser;
 
-    final allPosts = postProvider.posts;
-
-    if (authProvider.currentUser == null) {
+    if (currentUser == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -91,27 +85,33 @@ class _HomePageState extends State<HomePage> {
 
           if (postProvider.isLoading)
             const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Center(child: CircularProgressIndicator()),
-              ),
+              child: Center(child: CircularProgressIndicator()),
             )
           else
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
-                final post = allPosts[index];
+                final post = postProvider.posts[index];
                 return PostCard(
+                  postId: post.id!,
                   userName: post.userName ?? "User",
                   title: post.content ?? "",
                   avatar: post.userAvatar,
                   imageUrl: post.imagePath,
+                  timeStamp: post.timeStamp,
+                  isLiked: post.isLiked,
+                  likeCount: post.likeCount,
+                  commentCount: post.commentCount?? 0,
+                  onLike: () {
+                    context.read<PostProvider>().handleLike(
+                      post.id!,
+                      currentUser.id!,
+                    );
+                  },
                   onDelete: () {
-                    if (post.id != null) {
-                      handleDelete(post.id!);
-                    }
+                    handleDelete(post.id!, currentUser.id!);
                   },
                 );
-              }, childCount: allPosts.length),
+              }, childCount: postProvider.posts.length),
             ),
         ],
       ),

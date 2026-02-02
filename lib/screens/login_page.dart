@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
 import 'package:social_media_app/screens/bottom_nav_screen.dart';
-import 'package:social_media_app/screens/home_page.dart';
 import 'package:social_media_app/screens/signup_page.dart';
 import 'package:social_media_app/usecases/user_login_use_case.dart';
 import 'package:social_media_app/widgets/logo.dart';

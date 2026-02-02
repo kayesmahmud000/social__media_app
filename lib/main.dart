@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
+import 'package:social_media_app/providers/comment_provider.dart';
 import 'package:social_media_app/providers/post_provider.dart';
 import 'package:social_media_app/screens/slash_screen.dart';
 
 void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create:(context) => AuthProvider(), ),
-    ChangeNotifierProvider(create:(context) => PostProvider(),)
+    ChangeNotifierProvider(create:(context) => PostProvider(),),
+    ChangeNotifierProvider(create:(context) => CommentProvider(),)
   ],
   child: const MyApp(),
   ));
