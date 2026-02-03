@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:social_media_app/widgets/comment_sheet.dart';
 
-
 class PostCard extends StatelessWidget {
   final int postId;
   final String title;
@@ -12,7 +11,7 @@ class PostCard extends StatelessWidget {
   final String timeStamp;
   final bool isLiked;
   final int likeCount;
-  final int commentCount; 
+  final int commentCount;
   final VoidCallback? onLike;
   final VoidCallback? onDelete;
   final VoidCallback? onEdit;
@@ -27,13 +26,12 @@ class PostCard extends StatelessWidget {
     required this.timeStamp,
     this.isLiked = false,
     this.likeCount = 0,
-    this.commentCount = 0, 
+    this.commentCount = 0,
     this.onLike,
     this.onDelete,
     this.onEdit,
   });
 
-  
   String _formatTimeStamp(String ts) {
     try {
       DateTime dateTime = DateTime.parse(ts);
@@ -48,7 +46,6 @@ class PostCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-       
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
@@ -58,10 +55,12 @@ class PostCard extends StatelessWidget {
                 backgroundColor: Colors.grey.shade200,
                 backgroundImage: avatar != null
                     ? (avatar!.startsWith('http')
-                        ? NetworkImage(avatar!)
-                        : FileImage(File(avatar!)) as ImageProvider)
+                          ? NetworkImage(avatar!)
+                          : FileImage(File(avatar!)) as ImageProvider)
                     : null,
-                child: avatar == null ? const Icon(Icons.person, size: 20) : null,
+                child: avatar == null
+                    ? const Icon(Icons.person, size: 20)
+                    : null,
               ),
               const SizedBox(width: 10),
               Column(
@@ -79,7 +78,9 @@ class PostCard extends StatelessWidget {
               ),
               const Spacer(),
               PopupMenuButton<String>(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 icon: const Icon(Icons.more_vert),
                 onSelected: (value) {
                   if (value == 'edit' && onEdit != null) onEdit!();
@@ -112,7 +113,6 @@ class PostCard extends StatelessWidget {
           ),
         ),
 
-       
         if (imageUrl != null && imageUrl!.isNotEmpty)
           Container(
             width: double.infinity,
@@ -123,12 +123,13 @@ class PostCard extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => const SizedBox(
                 height: 200,
-                child: Center(child: Icon(Icons.broken_image, color: Colors.grey)),
+                child: Center(
+                  child: Icon(Icons.broken_image, color: Colors.grey),
+                ),
               ),
             ),
           ),
 
-      
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
@@ -142,7 +143,7 @@ class PostCard extends StatelessWidget {
                   color: isLiked ? Colors.red : Colors.black,
                 ),
               ),
-              
+
               // Comment Button with Count
               InkWell(
                 borderRadius: BorderRadius.circular(20),
@@ -155,7 +156,10 @@ class PostCard extends StatelessWidget {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   child: Row(
                     children: [
                       const Icon(Icons.chat_bubble_outline, size: 24),

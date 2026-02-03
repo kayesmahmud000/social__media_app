@@ -2,13 +2,14 @@ import 'package:social_media_app/exception/database_custom_exception.dart';
 import 'package:social_media_app/helper/security_helper.dart';
 import 'package:social_media_app/models/user_model.dart';
 import 'package:social_media_app/repositories/main_repository.dart';
-import 'package:social_media_app/services/db_service.dart';
+
+import 'package:social_media_app/services/user__service.dart';
 import 'package:social_media_app/usecases/user_login_use_case.dart';
 import 'package:social_media_app/usecases/user_sign_up_usecase.dart';
 
 class UserRepository extends MainRepository<User> {
   @override
-  String get tableName => DbService.TABLE_USER;
+  String get tableName => UserService.TABLE_USER;
 
   Future<User?> signUp(UserSignUpDTO userDTO) async {
     String hashedPass = SecurityHelper.hashedPassword(userDTO.password);
@@ -41,7 +42,7 @@ class UserRepository extends MainRepository<User> {
       final List<Map<String, dynamic>> maps = await database.query(
         tableName,
         where:
-            "${DbService.COL_USER_EMAIL} = ? AND ${DbService.COL_USER_PASS} = ?",
+            "${UserService.COL_USER_EMAIL} = ? AND ${UserService.COL_USER_PASS} = ?",
         whereArgs: [userDTO.email, hashedPass],
       );
       if (maps.isNotEmpty) {

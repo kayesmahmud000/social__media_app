@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
 import 'package:social_media_app/providers/post_provider.dart';
+import 'package:social_media_app/screens/post_page.dart';
 import 'package:social_media_app/widgets/logo.dart';
 import 'package:social_media_app/widgets/post_card.dart';
 import 'package:social_media_app/widgets/story_section.dart';
@@ -71,7 +72,13 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.add, size: 28),
+                      IconButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PostPage()),
+                        ),
+                        icon: Icon(Icons.add, size: 28),
+                      ),
                       Logo.logo(width: 110, bottom: -42, w: 100),
                       const Icon(Icons.search, size: 28),
                     ],
@@ -100,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                   timeStamp: post.timeStamp,
                   isLiked: post.isLiked,
                   likeCount: post.likeCount,
-                  commentCount: post.commentCount?? 0,
+                  commentCount: post.commentCount ?? 0,
                   onLike: () {
                     context.read<PostProvider>().handleLike(
                       post.id!,

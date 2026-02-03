@@ -4,7 +4,7 @@ import 'package:social_media_app/repositories/comment_repository.dart';
 import 'package:social_media_app/usecases/comment_use_case.dart';
 
 class CommentProvider extends ChangeNotifier{
-  final CommentRepository _commentRepository =CommentRepository();
+  final CommentRepository _commentRepository = CommentRepository();
 
  List<CommentModel> _comments =[];
  bool _isLoading =false;
@@ -36,7 +36,6 @@ Future<bool> createComment(CommentDTO commentDTO)async{
         await getAllComment(newComment.postId);
         return true;
       }
-
   }catch (e){
     debugPrint('Error creating comment $e');
   }
