@@ -42,7 +42,10 @@ abstract class MainRepository<T> {
     }
   }
 
-Future<List<Map<String, dynamic>>> queryRaw(String sql, [List<dynamic>? arguments]) async {
+  Future<List<Map<String, dynamic>>> queryRaw(
+    String sql, [
+    List<dynamic>? arguments,
+  ]) async {
     try {
       final database = await db;
       return await database.rawQuery(sql, arguments);
@@ -50,7 +53,7 @@ Future<List<Map<String, dynamic>>> queryRaw(String sql, [List<dynamic>? argument
       throw DatabaseCustomException('Error executing raw query: $e');
     }
   }
- 
+
   Future<List<Map<String, dynamic>>> getAll() async {
     try {
       final database = await db;
@@ -79,6 +82,4 @@ Future<List<Map<String, dynamic>>> queryRaw(String sql, [List<dynamic>? argument
       rethrow;
     }
   }
-
-
 }

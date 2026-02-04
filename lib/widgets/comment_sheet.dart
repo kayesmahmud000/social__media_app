@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
@@ -113,10 +115,13 @@ class _CommentSheetState extends State<CommentSheet> {
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundImage: comment.userAvatar != null
-                            ? NetworkImage(comment.userAvatar!)
+                            ? (comment.userAvatar!.startsWith('http')
+                                  ? NetworkImage(comment.userAvatar!)
+                                  : FileImage(File(comment.userAvatar!))
+                                        as ImageProvider)
                             : null,
                         child: comment.userAvatar == null
-                            ? const Icon(Icons.person)
+                            ? const Icon(Icons.person, size: 40)
                             : null,
                       ),
                       title: Row(

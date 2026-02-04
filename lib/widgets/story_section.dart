@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
@@ -70,11 +72,15 @@ class StorySection extends StatelessWidget {
                         ),
                 ),
                 child: CircleAvatar(
-                  radius: 45,
-                  backgroundColor: Colors.grey.shade300,
-                  backgroundImage: image != null ? NetworkImage(image) : null,
+                  radius: 40,
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: image != null
+                      ? (image.startsWith('http')
+                            ? NetworkImage(image)
+                            : FileImage(File(image)) as ImageProvider)
+                      : null,
                   child: image == null
-                      ? const Icon(Icons.person, color: Colors.white)
+                      ? const Icon(Icons.person, size: 20)
                       : null,
                 ),
               ),

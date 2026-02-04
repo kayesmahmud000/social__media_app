@@ -6,6 +6,7 @@ import 'package:social_media_app/repositories/main_repository.dart';
 import 'package:social_media_app/services/user__service.dart';
 import 'package:social_media_app/usecases/user_login_use_case.dart';
 import 'package:social_media_app/usecases/user_sign_up_usecase.dart';
+import 'package:social_media_app/usecases/user_update_use_case.dart';
 
 class UserRepository extends MainRepository<User> {
   @override
@@ -33,6 +34,25 @@ class UserRepository extends MainRepository<User> {
       return User.fromMap(map);
     }
     return null;
+  }
+
+  Future<User?> updateUser(UserUpdateDTO userDTO, int userId) async {
+    try {
+      Map<String, dynamic> updateData = {
+        'username': userDTO.username,
+        'profile_url': userDTO.profileUrl,
+      };
+
+      int count = await update(updateData, userId);
+
+      if (count > 0) {
+        return await getUserById(userId);
+      } else {
+        throw DatabaseCustomException('User update failed or user not found');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<User?> login(UserLoginDTO userDTO) async {

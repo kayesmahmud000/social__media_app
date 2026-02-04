@@ -8,7 +8,7 @@ class UserService{
   static const COL_USER_EMAIL = 'email';
   static const COL_USER_PROFILE_PIC_URL = 'profile_url';
 
-  static const String createTable = ''''
+  static const String createTable = '''
       CREATE TABLE $TABLE_USER (
         $COL_USER_ID INTEGER PRIMARY KEY AUTOINCREMENT, 
         $COL_USER_NAME TEXT NOT NULL, 

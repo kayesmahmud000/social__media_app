@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
 import 'package:social_media_app/providers/post_provider.dart';
 import 'package:social_media_app/models/post_model.dart';
+import 'package:social_media_app/screens/edit_profile_screen.dart';
 import 'package:social_media_app/screens/post_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -16,24 +17,42 @@ class ProfilePage extends StatelessWidget {
     final List<PostModel> userPosts = context
         .watch<PostProvider>()
         .posts
-        .where((p) => p.userId == user?.id)
+        .where(
+          (p) =>
+              p.userId == user?.id &&
+              p.imagePath != null &&
+              p.imagePath!.isNotEmpty,
+        )
         .toList();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         title: Text(
           user?.userName ?? "Profile",
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => PostPage()),
+              MaterialPageRoute(builder: (context) => const PostPage()),
             ),
-            icon: Icon(Icons.add, size: 28),
+            icon: const Icon(
+              Icons.add_box_outlined,
+              color: Colors.black,
+              size: 28,
+            ),
           ),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.menu)),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.menu, color: Colors.black),
+          ),
         ],
       ),
       body: DefaultTabController(
@@ -51,14 +70,22 @@ class ProfilePage extends StatelessWidget {
                         CircleAvatar(
                           radius: 40,
                           backgroundColor: Colors.grey[200],
-                          backgroundImage: user?.profileUrl != null
-                              ? (user!.profileUrl!.startsWith('http')
+                          backgroundImage:
+                              (user?.profileUrl != null &&
+                                  user!.profileUrl!.isNotEmpty)
+                              ? (user.profileUrl!.startsWith('http')
                                     ? NetworkImage(user.profileUrl!)
                                     : FileImage(File(user.profileUrl!))
                                           as ImageProvider)
                               : null,
-                          child: user?.profileUrl == null
-                              ? const Icon(Icons.person, size: 40)
+                          child:
+                              (user?.profileUrl == null ||
+                                  user!.profileUrl!.isEmpty)
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Colors.grey,
+                                )
                               : null,
                         ),
                         Expanded(
@@ -78,8 +105,11 @@ class ProfilePage extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      user?.userName ?? "User Name",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      user?.userName ?? "User",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                     const Text("Flutter Developer | Tech Enthusiast"),
                     const SizedBox(height: 15),
@@ -87,8 +117,14 @@ class ProfilePage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const EditProfileScreen(),
+                              ),
+                            ),
                             style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.grey.shade300),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -104,6 +140,7 @@ class ProfilePage extends StatelessWidget {
                           child: OutlinedButton(
                             onPressed: () {},
                             style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.grey.shade300),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -153,13 +190,25 @@ class ProfilePage extends StatelessWidget {
           count,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        Text(label, style: const TextStyle(color: Colors.grey)),
+        Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)),
       ],
     );
   }
 
   Widget _buildPostGrid(List<PostModel> userPosts) {
-    if (userPosts.isEmpty) return const Center(child: Text("No posts yet."));
+    if (userPosts.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.photo_library_outlined, size: 50, color: Colors.grey),
+            SizedBox(height: 10),
+            Text("No photo posts yet.", style: TextStyle(color: Colors.grey)),
+          ],
+        ),
+      );
+    }
+
     return GridView.builder(
       padding: EdgeInsets.zero,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -170,24 +219,23 @@ class ProfilePage extends StatelessWidget {
       itemCount: userPosts.length,
       itemBuilder: (context, index) {
         final post = userPosts[index];
-        final imagePath = post.imagePath;
 
         return Container(
-          color: Colors.grey[200],
-          child: imagePath != null && imagePath.isNotEmpty
-              ? Image.file(
-                  File(imagePath),
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image, color: Colors.grey),
-                )
-              : const Icon(Icons.image, color: Colors.grey),
+          color: Colors.grey[100],
+          child: Image.file(
+            File(post.imagePath!),
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => const Center(
+              child: Icon(Icons.broken_image, color: Colors.grey),
+            ),
+          ),
         );
       },
     );
   }
 }
 
+// TabBar delegate class
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   _SliverAppBarDelegate(this._tabBar);
   final TabBar _tabBar;

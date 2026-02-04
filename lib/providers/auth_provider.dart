@@ -4,6 +4,7 @@ import 'package:social_media_app/models/user_model.dart';
 import 'package:social_media_app/repositories/user_repository.dart';
 import 'package:social_media_app/usecases/user_login_use_case.dart';
 import 'package:social_media_app/usecases/user_sign_up_usecase.dart';
+import 'package:social_media_app/usecases/user_update_use_case.dart';
 
 class AuthProvider extends ChangeNotifier {
   final UserRepository _userRepository = UserRepository();
@@ -11,7 +12,7 @@ class AuthProvider extends ChangeNotifier {
   User? _currentUser;
 
   bool _isLoggedIn = false;
-  bool _isLoading =false;
+  bool _isLoading = false;
 
   bool get isLoading => _isLoading;
 
@@ -29,28 +30,26 @@ class AuthProvider extends ChangeNotifier {
     try {
       User? user = await _userRepository.signUp(userDTO);
 
-    if (user !=null) {
-      _currentUser = user;
-      _isLoggedIn = true;
+      if (user != null) {
+        _currentUser = user;
+        _isLoggedIn = true;
 
-      final sharedPreferences = await SharedPreferences.getInstance();
-      await sharedPreferences.setInt('userId', user.id!);
+        final sharedPreferences = await SharedPreferences.getInstance();
+        await sharedPreferences.setInt('userId', user.id!);
 
-      notifyListeners();
-      return true;
-    }
-    return false;
+        notifyListeners();
+        return true;
+      }
+      return false;
     } catch (e) {
       debugPrint(e.toString());
-     rethrow;
-    }finally {
-      _setLoading(false); 
+      rethrow;
+    } finally {
+      _setLoading(false);
     }
   }
 
   Future<bool> login(UserLoginDTO userDTO) async {
-    
-
     User? user = await _userRepository.login(userDTO);
 
     if (user != null) {
@@ -67,6 +66,32 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
+Future<bool> updateUser(UserUpdateDTO userDTO) async {
+    _setLoading(true);
+    try {
+     
+      if (_currentUser == null || _currentUser!.id == null) {
+        throw Exception("No logged-in user found to update");
+      }
+
+      
+      User? updatedUser = await _userRepository.updateUser(userDTO, _currentUser!.id!);
+
+      if (updatedUser != null) {
+      
+        _currentUser = updatedUser;
+        notifyListeners(); 
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint("Update Error: ${e.toString()}");
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+ 
   Future<void> checkLoginStatus() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     int? userId = sharedPreferences.getInt('userId');
