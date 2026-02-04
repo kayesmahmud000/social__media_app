@@ -1,36 +1,27 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
 
-class StorySection extends StatelessWidget {
+class StorySection extends StatefulWidget {
   const StorySection({super.key});
 
+  @override
+  State<StorySection> createState() => _StorySectionState();
+}
+
+class _StorySectionState extends State<StorySection> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final currentUser = authProvider.currentUser;
-
-    final List<String> dummyUsers = [
-      "Rahim",
-      "Karim",
-      "Sakib",
-      "Tamim",
-      "Anika",
-      "Rahim",
-      "Karim",
-      "Sakib",
-      "Tamim",
-      "Anika",
-    ];
-
+    final userList = authProvider.users;
     return SizedBox(
       height: 150,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        itemCount: dummyUsers.length + 1,
+        itemCount: userList.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return _buildStoryItem(
@@ -39,9 +30,13 @@ class StorySection extends StatelessWidget {
               isCurrentUser: true,
             );
           } else {
+            final user = userList[index - 1];
+
+            if (user?.id == currentUser?.id) return const SizedBox.shrink();
+
             return _buildStoryItem(
-              name: dummyUsers[index - 1],
-              image: null,
+              name: user?.userName ?? "User",
+              image: user?.profileUrl,
               isCurrentUser: false,
             );
           }
@@ -74,22 +69,20 @@ class StorySection extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 40,
                   backgroundColor: Colors.grey[200],
-                  backgroundImage: image != null
+                  backgroundImage: (image != null && image.isNotEmpty)
                       ? (image.startsWith('http')
                             ? NetworkImage(image)
                             : FileImage(File(image)) as ImageProvider)
                       : null,
-                  child: image == null
-                      ? const Icon(Icons.person, size: 20)
+                  child: (image == null || image.isEmpty)
+                      ? const Icon(Icons.person, size: 40, color: Colors.grey)
                       : null,
                 ),
               ),
-
               if (isCurrentUser)
                 Positioned(
                   bottom: 4,
                   right: 4,
-
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.blue,
@@ -102,11 +95,14 @@ class StorySection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 5),
-
-          Text(
-            name,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-            overflow: TextOverflow.ellipsis,
+          SizedBox(
+            width: 80,
+            child: Text(
+              name,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),

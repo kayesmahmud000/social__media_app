@@ -9,11 +9,13 @@ import 'package:social_media_app/usecases/user_update_use_case.dart';
 class AuthProvider extends ChangeNotifier {
   final UserRepository _userRepository = UserRepository();
 
+  List<User?> _users = [];
   User? _currentUser;
 
   bool _isLoggedIn = false;
   bool _isLoading = false;
 
+  List<User?> get users => _users;
   bool get isLoading => _isLoading;
 
   User? get currentUser => _currentUser;
@@ -22,6 +24,19 @@ class AuthProvider extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  Future<void> getUsers() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _users = await _userRepository.getAllUser();  
+    } catch (e) {
+      debugPrint("Error loading posts: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> signUp(UserSignUpDTO userDTO) async {
@@ -66,21 +81,21 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
-Future<bool> updateUser(UserUpdateDTO userDTO) async {
+  Future<bool> updateUser(UserUpdateDTO userDTO) async {
     _setLoading(true);
     try {
-     
       if (_currentUser == null || _currentUser!.id == null) {
         throw Exception("No logged-in user found to update");
       }
 
-      
-      User? updatedUser = await _userRepository.updateUser(userDTO, _currentUser!.id!);
+      User? updatedUser = await _userRepository.updateUser(
+        userDTO,
+        _currentUser!.id!,
+      );
 
       if (updatedUser != null) {
-      
         _currentUser = updatedUser;
-        notifyListeners(); 
+        notifyListeners();
         return true;
       }
       return false;
@@ -91,7 +106,7 @@ Future<bool> updateUser(UserUpdateDTO userDTO) async {
       _setLoading(false);
     }
   }
- 
+
   Future<void> checkLoginStatus() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     int? userId = sharedPreferences.getInt('userId');

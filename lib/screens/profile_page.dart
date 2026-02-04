@@ -5,10 +5,41 @@ import 'package:social_media_app/providers/auth_provider.dart';
 import 'package:social_media_app/providers/post_provider.dart';
 import 'package:social_media_app/models/post_model.dart';
 import 'package:social_media_app/screens/edit_profile_screen.dart';
+import 'package:social_media_app/screens/login_page.dart';
 import 'package:social_media_app/screens/post_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  void handleLogout(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Logout"),
+        content: const Text("Are you sure you want to logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              await authProvider.logout();
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              }
+            },
+            child: const Text("Logout", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,16 +169,24 @@ class ProfilePage extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              handleLogout(context);
+                            },
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(color: Colors.grey.shade300),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Text(
-                              "Share Profile",
-                              style: TextStyle(color: Colors.black),
+                            child: Row(
+                              mainAxisAlignment: .center,
+                              children: [
+                                Icon(Icons.logout, color: Colors.red),
+                                Text(
+                                  "Logout",
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ],
                             ),
                           ),
                         ),

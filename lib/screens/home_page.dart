@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
         final userId = context.read<AuthProvider>().currentUser?.id;
         if (userId != null) {
           context.read<PostProvider>().getPosts(userId);
+          context.read<AuthProvider>().getUsers();
         }
       }
     });

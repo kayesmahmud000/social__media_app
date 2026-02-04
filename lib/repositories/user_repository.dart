@@ -36,6 +36,11 @@ class UserRepository extends MainRepository<User> {
     return null;
   }
 
+  Future<List<User?>> getAllUser() async {
+    final maps = await getAll();
+    return maps.map((map) => User.fromMap(map)).toList();
+  }
+
   Future<User?> updateUser(UserUpdateDTO userDTO, int userId) async {
     try {
       Map<String, dynamic> updateData = {

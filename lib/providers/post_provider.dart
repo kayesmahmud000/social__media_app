@@ -13,6 +13,7 @@ PostModel? _selectedPost;
   List<PostModel> get posts => _posts;
   PostModel? get selectedPost => _selectedPost; 
   bool get isLoading => _isLoading;
+  
   Future<void> getPosts(int userId) async {
     _isLoading = true;
     notifyListeners();
