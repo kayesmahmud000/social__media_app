@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/providers/auth_provider.dart';
 import 'package:social_media_app/providers/post_provider.dart';
+import 'package:social_media_app/providers/stroy_provider.dart';
 import 'package:social_media_app/screens/post_page.dart';
 import 'package:social_media_app/widgets/logo.dart';
 import 'package:social_media_app/widgets/post_card.dart';
@@ -23,6 +24,7 @@ class _HomePageState extends State<HomePage> {
         if (userId != null) {
           context.read<PostProvider>().getPosts(userId);
           context.read<AuthProvider>().getUsers();
+          context.read<StroyProvider>().getAllStories();
         }
       }
     });

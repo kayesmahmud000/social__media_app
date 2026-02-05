@@ -1,6 +1,8 @@
 class StoryModel {
   final int? id;
   final int userId;
+  final String? userName;
+  final String ? profileUrl;
   final String? mediaUrl;
   final String? caption;
   final String timeStamp;
@@ -11,6 +13,8 @@ class StoryModel {
     this.mediaUrl,
     this.caption,
     required this.timeStamp,
+    this.userName,
+    this.profileUrl
   });
 
   StoryModel copyWith({
@@ -19,6 +23,8 @@ class StoryModel {
     String? mediaUrl,
     String? caption,
     String? timeStamp,
+     String? userName,
+   String ? profileUrl,
   }) {
     return StoryModel(
       id: id ?? this.id,
@@ -26,6 +32,8 @@ class StoryModel {
       mediaUrl: mediaUrl ?? this.mediaUrl,
       caption: caption ?? this.caption,
       timeStamp: timeStamp ?? this.timeStamp,
+      userName: userName?? this.userName,
+      profileUrl: profileUrl?? this.profileUrl
     );
   }
 
@@ -45,6 +53,8 @@ class StoryModel {
       mediaUrl: data['media_url'],
       caption: data['caption'],
       timeStamp: data['time_stamp'],
+      userName: data['username'],
+      profileUrl: data['profile_url']
     );
   }
 }

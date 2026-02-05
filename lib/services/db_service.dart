@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:social_media_app/services/comment_service.dart';
 import 'package:social_media_app/services/like_service.dart';
 import 'package:social_media_app/services/post_service.dart';
+import 'package:social_media_app/services/story_service.dart';
 import 'package:social_media_app/services/user__service.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -46,5 +47,9 @@ class DbService {
     await db.execute(CommentService.createTable);
 
     await db.execute(LikeService.createTable);
+
+    await db.execute(StoryService.createTable);
+    
+    await db.execute(StoryService.createViewsTable);
   }
 }
